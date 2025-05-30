@@ -9,15 +9,16 @@ contract KrakenProver is Prover {
     using WebProofLib for WebProof;
     using WebLib for Web;
 
-    //string public constant DATA_URL = "https://api.kraken.com/0/public/Ticker?pair=ETHUSD";
-    string public constant DATA_URL = "https://api.stripe.com/v1/disputes";
+    string public constant DISPUTES_DATA_URL = "https://api.stripe.com/v1/disputes";
+    string public constant REVENUE_DATA_URL = "https://api.stripe.com/v1/payment_intents?limit=1";
 
-    function main(WebProof calldata webProof) public view returns (Proof memory, bool) {
-        Web memory web = webProof.verify(DATA_URL);
+    function main(WebProof calldata disputesWebProof, WebProof calldata revenueWebProof) public view returns (Proof memory, bool, bool) {
+        Web memory disputesWeb = disputesWebProof.verify(DISPUTES_DATA_URL);
+        bool zeroDisputes = disputesWeb.jsonGetBool("length(data) == `0`");
 
-        //string memory avgPrice = web.jsonGetString("result.XETHZUSD.p[0]");
-        bool zeroDisputes = web.jsonGetBool("length(data) == `0`");
+        Web memory revenueWeb = revenueWebProof.verify(REVENUE_DATA_URL);
+        bool revenueExists = revenueWeb.jsonGetBool("length(data) != `0`");
 
-        return (proof(), zeroDisputes);
+        return (proof(), zeroDisputes, revenueExists);
     }
 }

@@ -10,12 +10,14 @@ contract KrakenVerifier is Verifier {
     address public prover;
 
     bool public zeroDisputes;
+    bool public revenueExists;
 
     constructor(address _prover) {
         prover = _prover;
     }
 
-    function verify(Proof calldata, bool _zeroDisputes) public onlyVerified(prover, KrakenProver.main.selector) {
+    function verify(Proof calldata, bool _zeroDisputes, bool _revenueExists) public onlyVerified(prover, KrakenProver.main.selector) {
         zeroDisputes = _zeroDisputes;
+        revenueExists = _revenueExists;
     }
 }
